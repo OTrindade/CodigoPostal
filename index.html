@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Codigo Postal</title>
+  <!-- CDN do React e ReactDOM -->
+  <script src="https://unpkg.com/react@17/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+  <style>
+    body {
+      font-family: 'Poppins', Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: linear-gradient(135deg, #3059aa, #72c2f0);
+      color: #333;
+    }
+    
+    .container {
+      background-color: #fff;
+      padding: 24px;
+      width: 100%;
+      max-width: 360px;
+      border-radius: 16px;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .label {
+      font-size: 22px;
+      font-weight: 600;
+      color: #3059aa;
+      margin-bottom: 16px;
+      text-align: center;
+    }
+
+    .input {
+      height: 48px;
+      width: 100%;
+      border: 2px solid #ccc;
+      padding: 0 12px;
+      border-radius: 8px;
+      font-size: 16px;
+      transition: all 0.3s ease;
+      margin-bottom: 16px;
+    }
+
+    .input:focus {
+      border-color: #3059aa;
+      outline: none;
+      box-shadow: 0 0 8px rgba(48, 89, 170, 0.2);
+    }
+
+    .button {
+      background-color: #3059aa;
+      color: #fff;
+      padding: 12px;
+      width: 100%;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    .button:hover {
+      background-color: #1d4f91;
+      transform: scale(1.05);
+    }
+
+    .resultContainer {
+      background-color: #f0f0f0;
+      padding: 16px;
+      border-radius: 12px;
+      width: 100%;
+      text-align: center;
+      font-size: 16px;
+      color: #333;
+      margin-top: 20px;
+    }
+
+    .creditos {
+      font-size: 14px;
+      color: #666;
+      margin-top: 16px;
+      text-align: center;
+    }
+
+    /* Media query para garantir que o layout seja responsivo em telas pequenas */
+    @media (max-width: 768px) {
+      .container {
+        padding: 16px;
+      }
+
+      .label {
+        font-size: 20px;
+      }
+
+      .input, .button {
+        font-size: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    // Seu componente React
+    const LoginScreen = () => {
+      const [codigoPostal, setCodigoPostal] = React.useState('4700-');
+      const [freguesia, setFreguesia] = React.useState(null);
+
+      const procuraCodigoPostal = async () => {
+        if (codigoPostal.trim() === '4700-') {
+          alert('Erro: Tem que colocar todo o código postal');
+          return;
+        }
+        if (codigoPostal.length > 8) {
+          alert('Erro: Só pode ter 3 números depois do "-"');
+          return;
+        }
+
+        try {
+          const response = await fetch(
+            `https://maps.googleapis.com/maps/api/geocode/json?address=${codigoPostal}&key=AIzaSyANtJdI08SURwuAdAKRmhdECXs1OH5vYmk`
+          );
+          const data = await response.json();
+
+          if (data.status === 'OK' && data.results.length > 0) {
+            const addressComponents = data.results[0].address_components;
+            const freguesiaComponent = addressComponents.find((component) =>
+              component.types.includes('administrative_area_level_3')
+            );
+
+            if (freguesiaComponent) {
+              const freguesiaName = freguesiaComponent.long_name;
+              setFreguesia(`${codigoPostal} Freguesia: ${freguesiaName}`);
+              setCodigoPostal('4700-');
+            } else {
+              alert('Erro: Freguesia não encontrada.');
+            }
+          } else {
+            alert('Erro: Freguesia não encontrada para o código postal inserido.');
+          }
+        } catch (error) {
+          alert('Erro: Ocorreu um erro ao buscar a freguesia. Tente novamente.');
+        }
+      };
+
+      return (
+        <div className="container">
+          <label className="label">Código Postal</label>
+          <img src='./img/user.png' alt="User" style={{ width: '120px', height: '120px', marginBottom: '20px', borderRadius: '50%' }} />
+          <input
+            type="text"
+            className="input"
+            placeholder="4700-"
+            value={codigoPostal}
+            onChange={(e) => setCodigoPostal(e.target.value)}
+          />
+          <button className="button" onClick={procuraCodigoPostal}>
+            Procurar
+          </button>
+
+          {freguesia && (
+            <div className="resultContainer">
+              <p>{freguesia}</p>
+            </div>
+          )}
+
+          <p className="creditos">Desenvolvedor: devthiagotrindadelopes@gmail.com</p>
+        </div>
+      );
+    };
+
+    ReactDOM.render(<LoginScreen />, document.getElementById('root'));
+  </script>
+</body>
+</html>
