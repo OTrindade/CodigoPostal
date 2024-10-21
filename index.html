@@ -19,7 +19,8 @@
       height: 100vh;
       background: linear-gradient(135deg, #3059aa, #72c2f0);
       color: #333;
-      box-sizing: border-box; /* Certifica-se de que padding e border estão inclusos na largura total */
+      box-sizing: border-box;
+      overflow-x: hidden; /* Previne conteúdo de sair da tela horizontalmente */
     }
 
     .container {
@@ -27,13 +28,13 @@
       padding: 24px;
       width: 100%;
       max-width: 360px;
-      margin: 16px; /* Garante que o contêiner não fique grudado nas bordas da tela */
+      margin: 16px; /* Garante que o contêiner tenha margem em torno dele */
       border-radius: 16px;
       box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
       display: flex;
       flex-direction: column;
       align-items: center;
-      box-sizing: border-box; /* Garante que padding seja considerado no cálculo da largura */
+      box-sizing: border-box; /* Inclui padding no cálculo de largura */
     }
 
     .label {
@@ -99,6 +100,7 @@
     @media (max-width: 768px) {
       .container {
         padding: 16px;
+        margin: 8px; /* Adiciona um pouco mais de espaçamento em telas menores */
       }
 
       .label {
@@ -109,7 +111,6 @@
         font-size: 14px;
       }
     }
-
   </style>
 </head>
 <body>
