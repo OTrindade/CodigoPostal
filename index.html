@@ -8,113 +8,12 @@
   <script src="https://unpkg.com/react@17/umd/react.development.js" crossorigin></script>
   <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js" crossorigin></script>
   <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
-  <style>
-    body {
-      font-family: 'Poppins', Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      background: linear-gradient(135deg, #3059aa, #72c2f0);
-      color: #333;
-      box-sizing: border-box;
-      overflow-x: hidden; /* Previne conteúdo de sair da tela horizontalmente */
-    }
-
-    .container {
-      background-color: #fff;
-      padding: 24px;
-      width: 100%;
-      max-width: 360px;
-      margin: 16px; /* Garante que o contêiner tenha margem em torno dele */
-      border-radius: 16px;
-      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      box-sizing: border-box; /* Inclui padding no cálculo de largura */
-    }
-
-    .label {
-      font-size: 22px;
-      font-weight: 600;
-      color: #3059aa;
-      margin-bottom: 16px;
-      text-align: center;
-    }
-
-    .input {
-      height: 48px;
-      width: 100%;
-      border: 2px solid #ccc;
-      padding: 0 12px;
-      border-radius: 8px;
-      font-size: 16px;
-      transition: all 0.3s ease;
-      margin-bottom: 16px;
-    }
-
-    .input:focus {
-      border-color: #3059aa;
-      outline: none;
-      box-shadow: 0 0 8px rgba(48, 89, 170, 0.2);
-    }
-
-    .button {
-      background-color: #3059aa;
-      color: #fff;
-      padding: 12px;
-      width: 100%;
-      border: none;
-      border-radius: 8px;
-      font-size: 16px;
-      cursor: pointer;
-      transition: background-color 0.3s ease, transform 0.2s ease;
-    }
-
-    .button:hover {
-      background-color: #1d4f91;
-      transform: scale(1.05);
-    }
-
-    .resultContainer {
-      background-color: #f0f0f0;
-      padding: 16px;
-      border-radius: 12px;
-      width: 100%;
-      text-align: center;
-      font-size: 16px;
-      color: #333;
-      margin-top: 20px;
-    }
-
-    .creditos {
-      font-size: 14px;
-      color: #666;
-      margin-top: 16px;
-      text-align: center;
-    }
-
-    @media (max-width: 768px) {
-      .container {
-        padding: 16px;
-        margin: 8px; /* Adiciona um pouco mais de espaçamento em telas menores */
-      }
-
-      .label {
-        font-size: 20px;
-      }
-
-      .input, .button {
-        font-size: 14px;
-      }
-    }
-  </style>
+  <!-- Importando o arquivo de CSS -->
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div id="root"></div>
+
   <script type="text/babel">
     // Seu componente React
     const LoginScreen = () => {
@@ -123,11 +22,11 @@
 
       const procuraCodigoPostal = async () => {
         if (codigoPostal.trim() === '4700-') {
-          alert('Erro: Tem que colocar todo o código postal');
+          alert('Por favor, preencha o código postal completo.');
           return;
         }
-        if (codigoPostal.length > 8) {
-          alert('Erro: Só pode ter 3 números depois do "-"');
+        if (!/^\d{4}-\d{3}$/.test(codigoPostal)) {
+          alert('O código postal deve estar no formato XXXX-XXX.');
           return;
         }
 
@@ -148,13 +47,13 @@
               setFreguesia(`${codigoPostal} Freguesia: ${freguesiaName}`);
               setCodigoPostal('4700-');
             } else {
-              alert('Erro: Freguesia não encontrada.');
+              alert('Não foi possível encontrar a freguesia correspondente ao código postal informado.');
             }
           } else {
-            alert('Erro: Freguesia não encontrada para o código postal inserido.');
+            alert('Nenhum resultado encontrado para o código postal inserido.');
           }
         } catch (error) {
-          alert('Erro: Ocorreu um erro ao buscar a freguesia. Tente novamente.');
+          alert('Ocorreu um erro ao buscar a freguesia. Por favor, tente novamente mais tarde.');
         }
       };
 
@@ -163,13 +62,13 @@
           <label className="label">Código Postal</label>
           <img src='./img/user.png' alt="User" style={{ width: '120px', height: '120px', marginBottom: '20px', borderRadius: '50%' }} />
           <input
-            type="tel"  // Alterado de 'text' para 'tel'
+            type="tel"
             className="input"
             placeholder="4700-"
             value={codigoPostal}
             onChange={(e) => setCodigoPostal(e.target.value)}
-            pattern="[0-9]*"  // Garantir que o campo aceite apenas números
-            inputMode="numeric"  // Sugere que o teclado numérico seja usado em dispositivos móveis
+            pattern="[0-9]*"
+            inputMode="numeric"
           />
           <button className="button" onClick={procuraCodigoPostal}>
             Procurar
