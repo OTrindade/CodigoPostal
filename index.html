@@ -163,11 +163,13 @@
           <label className="label">Código Postal</label>
           <img src='./img/user.png' alt="User" style={{ width: '120px', height: '120px', marginBottom: '20px', borderRadius: '50%' }} />
           <input
-            type="text"
+            type="tel"  // Alterado de 'text' para 'tel'
             className="input"
             placeholder="4700-"
             value={codigoPostal}
             onChange={(e) => setCodigoPostal(e.target.value)}
+            pattern="[0-9]*"  // Garantir que o campo aceite apenas números
+            inputMode="numeric"  // Sugere que o teclado numérico seja usado em dispositivos móveis
           />
           <button className="button" onClick={procuraCodigoPostal}>
             Procurar
