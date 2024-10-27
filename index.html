@@ -18,6 +18,15 @@
     const LoginScreen = () => {
       const [codigoPostal, setCodigoPostal] = React.useState('4700-');
       const [freguesia, setFreguesia] = React.useState(null);
+      const [dadosLocal, setDadosLocal] = React.useState(null);
+
+      // Carregar o JSON local uma vez na inicialização
+      React.useEffect(() => {
+        fetch('./dados.json')
+          .then(response => response.json())
+          .then(data => setDadosLocal(data))
+          .catch(error => console.error("Erro ao carregar dados locais:", error));
+      }, []);
 
       const procuraCodigoPostal = async () => {
         if (codigoPostal.trim() === '4700-') {
@@ -29,6 +38,14 @@
           return;
         }
 
+        // Verifica se os dados locais foram carregados
+        if (dadosLocal && dadosLocal[codigoPostal]) {
+          setFreguesia(`${codigoPostal} Freguesia: ${dadosLocal[codigoPostal]}`);
+          setCodigoPostal('4700-');
+          return;
+        }
+
+        // Se não encontrou no JSON local, usa a API
         try {
           const response = await fetch(
             `https://maps.googleapis.com/maps/api/geocode/json?address=${codigoPostal}&key=AIzaSyANtJdI08SURwuAdAKRmhdECXs1OH5vYmk`
@@ -37,27 +54,23 @@
 
           if (data.status === 'OK' && data.results.length > 0) {
             const result = data.results[0];
-
-            // Tenta encontrar a freguesia nos postcode_localities
             let freguesiaName = null;
             const freguesiaLocalities = result.postcode_localities;
+
             if (freguesiaLocalities && freguesiaLocalities.length > 0) {
-              freguesiaName = freguesiaLocalities[1] || freguesiaLocalities[0]; // Se houver, prioriza o segundo.
+              freguesiaName = freguesiaLocalities[1] || freguesiaLocalities[0];
             }
 
-            // Se não encontrou nos postcode_localities, tenta no administrative_area_level_3
             if (!freguesiaName) {
               const addressComponents = result.address_components;
               const freguesiaComponent = addressComponents.find((component) =>
                 component.types.includes('administrative_area_level_3')
               );
-
               if (freguesiaComponent) {
                 freguesiaName = freguesiaComponent.long_name;
               }
             }
 
-            // Se encontrou a freguesia em um dos lugares, exibe; caso contrário, mostra erro.
             if (freguesiaName) {
               setFreguesia(`${codigoPostal} Freguesia: ${freguesiaName}`);
               setCodigoPostal('4700-');
